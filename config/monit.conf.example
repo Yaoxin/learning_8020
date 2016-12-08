@@ -1,0 +1,15 @@
+# Watch your rails app & sidekiq process and restart it automatically
+# Usage:
+# `sudo apt-get install monit -y`
+# `cp monit.conf.example /etc/monit/conf.d/`
+check process learning_8020_puma
+  with pidfile /data/www/learning_8020/shared/tmp/pids/puma.pid
+  start program = "/bin/sh -c 'cd /data/www/learning_8020/current; PATH=bin:/home/ruby/.rbenv/shims:/home/ruby/.rbenv/bin:$PATH RAILS_ENV="production" bundle exec puma -q -d -e production -C config/puma.rb'" as uid ruby and gid ruby with timeout 90 seconds
+  stop program = "/bin/sh -c 'cd /data/www/learning_8020/current; PATH=bin:/home/ruby/.rbenv/shims:/home/ruby/.rbenv/bin:$PATH RAILS_ENV="production" bundle exec pumactl -F /data/www/learning_8020/current/config/puma.rb stop'" as uid ruby and gid ruby with timeout 90 seconds
+  group learning_8020
+
+check process learning_8020_sidekiq
+  with pidfile /data/www/learning_8020/shared/tmp/pids/sidekiq.pid
+  start program = "/bin/sh -c 'cd /data/www/learning_8020/current; PATH=bin:/home/ruby/.rbenv/shims:/home/ruby/.rbenv/bin:$PATH RAILS_ENV="production" bundle exec sidekiq -d -e production  -C /data/www/learning_8020/current/config/sidekiq.yml -i 0 -P /data/www/learning_8020/shared/tmp/pids/sidekiq.pid -L /data/www/learning_8020/current/log/sidekiq.log'" as uid ruby and gid ruby with timeout 90 seconds
+  stop program = "/bin/sh -c 'cd /data/www/learning_8020/current; PATH=bin:/home/ruby/.rbenv/shims:/home/ruby/.rbenv/bin:$PATH RAILS_ENV="production" bundle exec sidekiqctl stop /data/www/learning_8020/shared/tmp/pids/sidekiq.pid 11'" as uid ruby and gid ruby with timeout 90 seconds
+  group learning_8020
