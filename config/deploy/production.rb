@@ -1,5 +1,5 @@
-set :domain, 'example.com'
-set :deploy_to, '/data/www/learning_8020'
-set :repository,  'git@github.com:xx/xxx.git'
+set :domain, 'wx.cloudying.me'
+set :deploy_to, '/home/ruby/learning_8020'
+set :repository,  'git@github.com:Yaoxin/learning_8020.git'
 set :branch, 'master'
 set :user, 'ruby'
